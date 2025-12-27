@@ -1,18 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using WarehouseManagement.Application.Interfaces;
+using WarehouseManagement.Application.Interfaces.Repositories;
 using WarehouseManagement.Domain.Common;
 using WarehouseManagement.Infrastructure.Data;
 
 namespace WarehouseManagement.Infrastructure.Repositories;
 
-public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+public class GenericRepository<T>(ApplicationDbContext context) : IGenericRepository<T> where T : BaseEntity
 {
-    private readonly ApplicationDbContext _context;
-
-    public GenericRepository(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<T?> GetByIdAsync(int id)
     {
@@ -29,7 +24,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         await _context.Set<T>().AddAsync(entity);
     }
 
-    public async void Update(T entity)
+    public void Update(T entity)
     {
         _context.Set<T>().Attach(entity);
         _context.Entry(entity).State = EntityState.Modified;

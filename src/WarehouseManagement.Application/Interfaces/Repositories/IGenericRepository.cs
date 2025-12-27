@@ -1,7 +1,6 @@
-using System.Linq.Expressions;
 using WarehouseManagement.Domain.Common;
 
-namespace WarehouseManagement.Application.Interfaces;
+namespace WarehouseManagement.Application.Interfaces.Repositories;
 
 public interface IGenericRepository<T> where T : BaseEntity
 {
