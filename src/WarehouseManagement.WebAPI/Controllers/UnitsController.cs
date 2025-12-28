@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagement.Application.DTOs;
 using WarehouseManagement.Application.Interfaces.Services;
-using WarehouseManagement.Domain.Entities;
 
 namespace WarehouseManagement.WebAPI.Controllers;
 
