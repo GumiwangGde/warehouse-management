@@ -10,7 +10,7 @@ public class UnitConversionService(IGenericRepository<UnitConversion> conversion
 {
     private readonly IGenericRepository<UnitConversion> _conversionRepo = conversionRepo;
 
-    public async Task<IReadOnlyList<UnitConversionDTO>> GetConvesionsByProductAsync(int productId)
+    public async Task<IReadOnlyList<UnitConversionDTO>> GetConversionsByProductAsync(int productId)
     {
         var conversions = await _conversionRepo.ListAllAsync();
 
@@ -26,7 +26,7 @@ public class UnitConversionService(IGenericRepository<UnitConversion> conversion
             })];
     }
 
-    public async Task<UnitConversionDTO> CreateUnitAsync(CreateUnitConversionRequest request)
+    public async Task<UnitConversionDTO> CreateConversionAsync(CreateUnitConversionRequest request)
     {
         var conversion = new UnitConversion
         {
