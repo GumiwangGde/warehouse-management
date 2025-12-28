@@ -1,36 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
-using WarehouseManagement.Application.Interfaces.Repositories;
-using WarehouseManagement.Domain.Entities;
+using WarehouseManagement.Application.DTOs;
+using WarehouseManagement.Application.Interfaces.Services;
 
 namespace WarehouseManagement.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 
-public class CategoriesController(IGenericRepository<Category> categoryRepo) : ControllerBase
+public class CategoriesController(ICategoryService categoryService) : ControllerBase
 {
-    private readonly IGenericRepository<Category> _categoryRepo = categoryRepo;
+    private readonly ICategoryService _categoryService = categoryService;
 
     /// <summary>
     ///  Get all list of category
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Category>>> GetCategories()
+    public async Task<ActionResult<IReadOnlyList<CategoryDTO>>> GetCategories()
     {
-        var categories = await _categoryRepo.ListAllAsync();
-        return Ok(categories);
+        var result = await _categoryService.GetAllCategoryAsync();
+        return Ok(result);
     }
 
     /// <summary>
     /// Adding new category to the warehouse
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<Category>> CreateCategory(Category category)
+    public async Task<ActionResult<CategoryDTO>> CreateCategory(CreateCategoryRequest request)
     {
-        await _categoryRepo.AddAsync(category);
-        await _categoryRepo.SaveChangesAsync();
-
-        return Ok(category);
+        var result = await _categoryService.CreateCategoryAsync(request);
+        return Ok(result);
     }
 
     /// <summary>
@@ -39,16 +37,7 @@ public class CategoriesController(IGenericRepository<Category> categoryRepo) : C
     [HttpDelete]
     public async Task<IActionResult> DeleteCategory(int id)
     {
-        var category = await _categoryRepo.GetByIdAsync(id);
-
-        if (category == null)
-        {
-            return NotFound($"Category with ID {id} not found");
-        }
-
-        _categoryRepo.Delete(category);
-        await _categoryRepo.SaveChangesAsync();
-
-        return NoContent();
+        await _categoryService.DeleteCategoryAsync(id);
+        return Ok(new { Message = $"Category with {id} deleted" });
     }
 }
