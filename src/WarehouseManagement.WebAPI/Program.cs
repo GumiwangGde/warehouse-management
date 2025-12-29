@@ -29,6 +29,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUnitServices, UnitService>();
 builder.Services.AddScoped<IUnitConversionService, UnitConversionService>();
+builder.Services.AddScoped<IStockService, StockService>();
     
 var app = builder.Build();
 
