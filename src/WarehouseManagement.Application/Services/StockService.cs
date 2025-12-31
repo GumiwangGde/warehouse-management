@@ -1,8 +1,10 @@
+using System.Transactions;
 using Microsoft.VisualBasic;
 using WarehouseManagement.Application.DTOs;
 using WarehouseManagement.Application.Interfaces.Repositories;
 using WarehouseManagement.Application.Interfaces.Services;
 using WarehouseManagement.Domain.Entities;
+using WarehouseManagement.Domain.Enums;
 using WarehouseManagement.Domain.Exceptions;
 
 namespace WarehouseManagement.Application.Services;
@@ -12,13 +14,15 @@ public class StockService(
     IGenericRepository<Product> productRepo,
     IGenericRepository<UnitConversion> conversionRepo,
     IGenericRepository<Unit> unitRepo,
-    IGenericRepository<Supplier> supplierRepo ) : IStockService
+    IGenericRepository<Supplier> supplierRepo, 
+    IGenericRepository<History> historyRepo) : IStockService
 {
     private readonly IGenericRepository<Stock> _stockRepo = stockRepo;
     private readonly IGenericRepository<Product> _productRepo = productRepo;
     private readonly IGenericRepository<UnitConversion> _conversionRepo = conversionRepo;
     private readonly IGenericRepository<Unit> _unitRepo = unitRepo;
     private readonly IGenericRepository<Supplier> _supplierRepo = supplierRepo;
+    private readonly IGenericRepository<History> _historyRepo = historyRepo;
 
     public async Task<StockDTO> AdjustStockAsync(UpdateStockRequest request)
     {
@@ -59,11 +63,35 @@ public class StockService(
         }
         else
         {
-            stock.Quantity = finalQuantity;
-            _stockRepo.Update(stock);
+            if (request.Type == TransactionType.Outbound)
+            {
+                stock.Quantity -= finalQuantity;
+            }
+            else if (request.Type == TransactionType.Inbound)
+            {
+                stock.Quantity += finalQuantity;
+            }
+            else if (request.Type == TransactionType.Adjustment)
+            {
+                stock.Quantity += finalQuantity;
+            }
         }
 
         await _stockRepo.SaveChangesAsync();
+
+        var history = new History
+        {
+            StockId = stock.Id,
+            StaffId = request.StaffId,
+            InputUnitId = request.UnitId,
+            InputAmount = request.Amount,
+            BaseAmount = finalQuantity,
+            Type = request.Type,
+            TransactionDate = DateTime.UtcNow
+        };
+
+        await _historyRepo.AddAsync(history);
+        await _historyRepo.SaveChangesAsync();
 
         return new StockDTO
         {

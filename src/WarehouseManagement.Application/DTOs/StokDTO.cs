@@ -1,3 +1,5 @@
+using WarehouseManagement.Domain.Enums;
+
 namespace WarehouseManagement.Application.DTOs;
 
 public class StockDTO
@@ -18,6 +20,8 @@ public class UpdateStockRequest
 {
     public int ProductId { get; set; }
     public int SupplierId { get; set; }
+    public int StaffId { get; set; }
     public decimal Amount { get; set; }
     public int UnitId { get; set; }
+    public TransactionType Type { get; set; }
 }
