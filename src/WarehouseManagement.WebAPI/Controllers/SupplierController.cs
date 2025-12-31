@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagement.Application.DTOs;
 using WarehouseManagement.Application.Interfaces.Services;
 
 namespace WarehouseManagement.WebAPI.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("/api/[controller]")]
 
